@@ -4,42 +4,27 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"regexp"
+	"strconv"
 	"strings"
 )
 
-// Usage at this stage `./log_parser < data/enchiridion.txt`
-// or pipe in a webpage from `curl`, etc.
+// Usage:
+// go run main.go < data/log.txt
 func main() {
-	args := os.Args[1:]
-
-	// the words get lowercased
-	pattern := regexp.MustCompile(`[^a-z]+`)
-
-	if len(args) != 1 {
-		fmt.Println("Please type a search word.")
-		return
-	}
-
-	query := args[0]
-
+	sum := make(map[string]int)
 	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Split(bufio.ScanWords)
-
-	words := make(map[string]bool)
 
 	for scanner.Scan() {
-		word := strings.ToLower(scanner.Text())
-		word = pattern.ReplaceAllString(word, "")
+		fields := strings.Fields(scanner.Text())
+		domain := fields[0]
+		visits, _ := strconv.Atoi(fields[1])
+		sum[domain] += visits
 
-		if len(word) > 2 {
-			words[word] = true
-		}
 	}
 
-	if words[query] {
-		fmt.Printf("The input contains %q.\n", query)
-		return
+	fmt.Printf("%-30s %10s\n", "DOMAIN", "VISITS")
+	fmt.Println(strings.Repeat("-", 41))
+	for domain, visits := range sum {
+		fmt.Printf("%-30s %10d\n", domain, visits)
 	}
-	fmt.Printf("The input does not contain %q.\n", query)
 }
