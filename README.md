@@ -2,7 +2,7 @@
 
 ## `bufio` Scanners
 
-`bufio`'s scanner reads any input stream (terminal, network, file) into a buffer line-by-line. The `.Scan()` method reads a line into a `[]byte` buffer. Then the `.Text()` method retrieves a line and converts it to a string. `Scan` returns `false` when there are no more lines.
+`bufio`'s scanner reads any input stream (terminal, network, file) into a buffer line-by-line. The `.Scan()` method reads a line into a `[]byte` buffer. Then the `.Text()` method retrieves the _last_ line and converts it to a string. You can also get the bytes out with `.Bytes()`. `Scan` returns `false` when there are no more lines.
 
 [Example](https://yourbasic.org/golang/read-file-line-by-line/):
 
