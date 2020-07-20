@@ -22,3 +22,5 @@ if err := scanner.Err(); err != nil {
     log.Fatal(err)
 }
 ```
+
+To split on words instead of lines, you can do this: `scanner.Split(bufio.ScanWords)`.

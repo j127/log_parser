@@ -4,24 +4,42 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
+	"strings"
 )
 
 // Usage at this stage `./log_parser < data/enchiridion.txt`
+// or pipe in a webpage from `curl`, etc.
 func main() {
-	in := bufio.NewScanner(os.Stdin)
-	lines := 0
+	args := os.Args[1:]
 
-	for in.Scan() {
-		// fmt.Println("> ", in.Text(), " => ", in.Bytes())
-		lines++
+	// the words get lowercased
+	pattern := regexp.MustCompile(`[^a-z]+`)
+
+	if len(args) != 1 {
+		fmt.Println("Please type a search word.")
+		return
 	}
 
-	// e.g., this line at the top of the file would cause an error:
-	// `os.Stdin.Close()`
-	if err := in.Err(); err != nil {
-		fmt.Println("ERROR:", err)
+	query := args[0]
+
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Split(bufio.ScanWords)
+
+	words := make(map[string]bool)
+
+	for scanner.Scan() {
+		word := strings.ToLower(scanner.Text())
+		word = pattern.ReplaceAllString(word, "")
+
+		if len(word) > 2 {
+			words[word] = true
+		}
 	}
 
-	fmt.Println("lines: ", lines)
-
+	if words[query] {
+		fmt.Printf("The input contains %q.\n", query)
+		return
+	}
+	fmt.Printf("The input does not contain %q.\n", query)
 }
